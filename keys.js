@@ -149,7 +149,7 @@
         var self = this;
         this.addClass('visible');
         self.board.style.top = (window.pageYOffset)+"px";
-        Self.board.style.width = window.innerWidth+"px";
+        self.board.style.width = window.innerWidth+"px";
     }
     
     window.Keys = Keys;
