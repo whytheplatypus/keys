@@ -1,4 +1,3 @@
-
 (function(){
   "use strict";
 
@@ -12,7 +11,7 @@
     */
     var Keys = function(syms, opt){
         this.symbols = syms;
-        this.options = opt;
+        this.options = opt?opt:{};
         //we haven't rendered anything yet
         this.board = false;
         this.input = false; //the currently focused input
