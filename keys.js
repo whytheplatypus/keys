@@ -82,6 +82,22 @@
                 /*button.addEventListener('mouseup', function(event){
                  event.preventDefault();
                  }, false);*/
+                
+                 var insertAtCaret = function(el,text) {
+    var txtarea = el;
+    var scrollPos = txtarea.scrollTop;
+    var strPos = 0;
+strPos = txtarea.selectionStart;
+
+    var front = (txtarea.value).substring(0,strPos);  
+    var back = (txtarea.value).substring(strPos,txtarea.value.length); 
+    txtarea.value=front+text+back;
+    strPos = strPos + text.length;
+                    txtarea.selectionStart = strPos;
+        txtarea.selectionEnd = strPos;
+        txtarea.focus();
+    txtarea.scrollTop = scrollPos;
+}
 
                 button.hitButton = function (event) {
 
@@ -89,13 +105,15 @@
                     //self.input.focus();
                     //have to check for normal input vs just content editable at some point
 
-                    if (self.input.setValue) {
+                    if (self.input.replaceRange) {
                         var cursor_temp = self.input.getCursor();
+                        self.input.replaceRange(button.value, cursor_temp);
+                        /*var cursor_temp = self.input.getCursor();
                         self.input.setValue(self.input.getValue() + button.value);
                         cursor_temp.ch += 1;
-                        self.input.setCursor(cursor_temp);
+                        self.input.setCursor(cursor_temp);*/
                     } else {
-                        self.input.value += button.value;
+                        insertAtCaret(self.input, button.value);
                     }
                     event.preventDefault();
                     button.removeEventListener('touchend', button.hitButton, false);
@@ -118,22 +136,7 @@
                     button.addEventListener('mouseup', function (event) {
                         event.preventDefault();
                     }, false);
-                    button.addEventListener('click', function (event) {
-
-                        //event.preventDefault();
-                        //self.input.focus();
-                        //have to check for normal input vs just content editable at some point
-                        if (self.input.setValue) {
-                            var cursor_temp = self.input.getCursor();
-                            self.input.setValue(self.input.getValue() + button.value);
-                            cursor_temp.ch += 1;
-                            self.input.setCursor(cursor_temp);
-                        } else {
-                            self.input.value += button.value;
-                        }
-                        event.preventDefault();
-
-                    }, false);
+                    button.addEventListener('click', button.hitButton, false);
                 }
 
                 self.board.appendChild(button);
