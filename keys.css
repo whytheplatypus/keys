@@ -1,0 +1,18 @@
+
+div#keyboard{
+    position:fixed;
+    top:-30px;
+    height:30px;
+    width:100%;
+    z-index: 2000;
+
+    -webkit-transition: top 0.25s ease-in-out;
+    -moz-transition: top 0.25s ease-in-out;
+    -o-transition: top 0.25s ease-in-out;
+
+}
+
+div#keyboard.visible{
+    position:absolute;
+    top:0px;
+}
