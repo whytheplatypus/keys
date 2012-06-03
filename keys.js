@@ -83,8 +83,7 @@
                  event.preventDefault();
                  }, false);*/
 
-
-                button.addEventListener('touchend', function (event) {
+                button.hitButton = function (event) {
 
                     //event.preventDefault();
                     //self.input.focus();
@@ -99,7 +98,17 @@
                         self.input.value += button.value;
                     }
                     event.preventDefault();
+                    button.removeEventListener('touchend', button.hitButton, false);
 
+                };
+
+                button.addEventListener('touchstart',function(){
+                    //event.preventDefault();
+                    button.addEventListener('touchend', button.hitButton, false);
+                }, false);
+                button.addEventListener('touchmove', function(){
+                    //event.preventDefault();
+                    button.removeEventListener('touchend', button.hitButton, false);
                 }, false);
 
                 if (self.options.debug) {
