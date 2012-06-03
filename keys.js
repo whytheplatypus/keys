@@ -70,7 +70,7 @@
             }
 
             self.symbols.forEach(function(key){
-                var button = document.createElement('button');
+                var button = document.createElement('a');
                 button.value = key;
                 button.innerHTML = key;
                 button.className = "key";
@@ -118,13 +118,13 @@
     Keys.prototype.hide = function(){
         this.removeClass('visible');
         this.input = false;
-        this.board.style.top = "-30px";
+        this.board.style.top = "-60px";
     }
 
     Keys.prototype.show = function(){
         var self = this;
         this.addClass('visible');
-        self.board.style.top = window.pageYOffset+"px";
+        self.board.style.top = (window.pageYOffset+18)+"px";
     }
     
     window.Keys = Keys;
