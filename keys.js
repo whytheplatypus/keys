@@ -60,7 +60,7 @@
     Keys.prototype.build = function(){
         var self = this;
         //make sure we're on iOS (just iPad for now)
-        //if (/*(navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || */(navigator.userAgent.indexOf('iPad') != -1)) {
+        if (this.options.debug || (navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || (navigator.userAgent.indexOf('iPad') != -1)) {
             if(!self.board){
                 self.board = document.createElement('div');
                 self.board.id = "keyboard";
@@ -110,7 +110,7 @@
                     self.board.style.top = window.pageYOffset+"px";
                 }
             }, false);
-        //}
+        }
 
         return this;
     };
@@ -124,7 +124,7 @@
     Keys.prototype.show = function(){
         var self = this;
         this.addClass('visible');
-        self.board.style.top = (window.pageYOffset+18)+"px";
+        self.board.style.top = (window.pageYOffset)+"px";
     }
     
     window.Keys = Keys;
