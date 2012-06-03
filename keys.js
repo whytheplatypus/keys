@@ -66,6 +66,8 @@
             }
             if (!document.getElementById(self.board.id)) {
                 document.body.appendChild(self.board);
+                self.board.addEventListener('selectstart', function(event){event.preventDefault(); console.log(event); return false;}, false);
+                self.board.addEventListener('select', function(event){event.preventDefault(); console.log(event); return false;}, false);
             }
 
             self.symbols.forEach(function (key) {
@@ -73,37 +75,26 @@
                 button.value = key;
                 button.innerHTML = key;
                 button.className = "key";
-                button.hidefocus = "true";
-
-                /*button.addEventListener('touchstart', function(event){
-                 event.preventDefault();
-                 }, false);*/
-
-                /*button.addEventListener('mouseup', function(event){
-                 event.preventDefault();
-                 }, false);*/
                 
-                 var insertAtCaret = function(el,text) {
-    var txtarea = el;
-    var scrollPos = txtarea.scrollTop;
-    var strPos = 0;
-strPos = txtarea.selectionStart;
-
-    var front = (txtarea.value).substring(0,strPos);  
-    var back = (txtarea.value).substring(strPos,txtarea.value.length); 
-    txtarea.value=front+text+back;
-    strPos = strPos + text.length;
+                var insertAtCaret = function(el,text) {
+                    var txtarea = el;
+                    var scrollPos = txtarea.scrollTop;
+                    var strPos = 0;
+                    strPos = txtarea.selectionStart;
+                
+                    var front = (txtarea.value).substring(0,strPos);  
+                    var back = (txtarea.value).substring(strPos,txtarea.value.length); 
+                    txtarea.value=front+text+back;
+                    strPos = strPos + text.length;
                     txtarea.selectionStart = strPos;
-        txtarea.selectionEnd = strPos;
-        txtarea.focus();
-    txtarea.scrollTop = scrollPos;
-}
+                    txtarea.selectionEnd = strPos;
+                    txtarea.focus();
+                    txtarea.scrollTop = scrollPos;
+                }
 
                 button.hitButton = function (event) {
-
-                    //event.preventDefault();
-                    //self.input.focus();
-                    //have to check for normal input vs just content editable at some point
+                    button.removeEventListener('touchend', button.hitButton, false);
+                    event.preventDefault();
 
                     if (self.input.replaceRange) {
                         var cursor_temp = self.input.getCursor();
@@ -115,28 +106,25 @@ strPos = txtarea.selectionStart;
                     } else {
                         insertAtCaret(self.input, button.value);
                     }
-                    event.preventDefault();
-                    button.removeEventListener('touchend', button.hitButton, false);
-
+                    
                 };
-
-                button.addEventListener('touchstart',function(){
-                    //event.preventDefault();
+                var onTouchStart = function(){
                     button.addEventListener('touchend', button.hitButton, false);
-                }, false);
+                };
+                
+                button.addEventListener('touchstart', onTouchStart, false);
                 button.addEventListener('touchmove', function(){
-                    //event.preventDefault();
                     button.removeEventListener('touchend', button.hitButton, false);
                 }, false);
-
-                if (self.options.debug) {
-                    button.addEventListener('mousedown', function (event) {
-                        event.preventDefault();
-                    }, false);
-                    button.addEventListener('mouseup', function (event) {
-                        event.preventDefault();
-                    }, false);
-                    button.addEventListener('click', button.hitButton, false);
+                
+                button.addEventListener('mousedown', function (event) {
+                  event.preventDefault();
+                }, false);
+                button.addEventListener('mouseup', function (event) {
+                  event.preventDefault();
+                }, false);
+                if (self.options.debug && !((navigator.userAgent.indexOf('iPhone') != -1) || (navigator.userAgent.indexOf('iPod') != -1) || (navigator.userAgent.indexOf('iPad') != -1))) {
+                  button.addEventListener('click', button.hitButton, false);
                 }
 
                 self.board.appendChild(button);
