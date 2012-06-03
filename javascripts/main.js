@@ -1,1 +1,2 @@
-console.log('This would be the main JS file.');
+var demo_keys = new Keys(['~','`','_','#','*','[',']','{','}','(',')',':','/','@','^']);
+demo_keys.build();
