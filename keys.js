@@ -131,7 +131,7 @@
             window.addEventListener('resize', function(){
               if(self.input){
                 self.board.style.top = window.pageYOffset+"px";
-                Self.board.style.width = window.innerWidth+"px";
+                self.board.style.width = window.innerWidth+"px";
               }
             }, false);
         }
