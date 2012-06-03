@@ -32,10 +32,11 @@ div#keyboard .key {
     vertical-align: middle;
     cursor:pointer;
 }
+/*screws up iOS
 div#keyboard .key:hover {
     background: #1fa5ff;
     color: #ffffff;
-}
+}*/
 div#keyboard .key:active {
     background: #1f1dff;
 }

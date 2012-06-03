@@ -76,14 +76,19 @@
                 button.className = "key";
                 button.hidefocus = "true";
 
-                button.addEventListener('mousedown', function(event){
+                button.addEventListener('touchstart', function(event){
                     event.preventDefault();
                 }, false);
-
-                button.addEventListener('click', function(event){
-
+                
+                /*button.addEventListener('mouseup', function(event){
                     event.preventDefault();
-                    self.input.focus();
+                }, false);*/
+                
+                
+                button.addEventListener('touchend', function(event){
+
+                    //event.preventDefault();
+                    //self.input.focus();
                     //have to check for normal input vs just content editable at some point
                     self.input.value += button.value;
 
