@@ -6,6 +6,7 @@ div#keyboard{
     width:100%;
     z-index: 2000;
     overflow-x:scroll;
+    -webkit-overflow-scrolling: touch;
     -webkit-transition: top 0.25s ease-in-out;
     -moz-transition: top 0.25s ease-in-out;
     -o-transition: top 0.25s ease-in-out;

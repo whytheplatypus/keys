@@ -76,9 +76,9 @@
                 button.className = "key";
                 button.hidefocus = "true";
 
-                button.addEventListener('touchstart', function(event){
+                /*button.addEventListener('touchstart', function(event){
                     event.preventDefault();
-                }, false);
+                }, false);*/
                 
                 /*button.addEventListener('mouseup', function(event){
                     event.preventDefault();
@@ -91,6 +91,7 @@
                     //self.input.focus();
                     //have to check for normal input vs just content editable at some point
                     self.input.value += button.value;
+                    event.preventDefault();
 
                 }, false);
                 self.board.appendChild(button);
