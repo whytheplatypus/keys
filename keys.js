@@ -95,7 +95,8 @@
                 }, false);
                 self.board.appendChild(button);
             });
-
+            
+            
             //get orientation
             self.setOrientation();
             document.body.addEventListener('orientationchange', function(event){
@@ -110,10 +111,28 @@
                }, false);
                inputs[i].addEventListener('blur', function(){self.hide()}, false);
             }
+            if(this.options.codemirrors){
+              for (var i = 0; i < this.options.codemirrors.length; i++) {
+                this.options.codemirrors[i].setOption('onFocus', function(){
+                    self.input = this;
+                    self.show();
+                });
+                this.options.codemirrors[i].setOption('onBlur', function(){
+                    self.hide();
+                });
+              }
+            }
+
             window.addEventListener('scroll', function(){
                 if(self.input){
                     self.board.style.top = window.pageYOffset+"px";
                 }
+            }, false);
+            window.addEventListener('resize', function(){
+              if(self.input){
+                self.board.style.top = window.pageYOffset+"px";
+                Self.board.style.width = window.innerWidth+"px";
+              }
             }, false);
         }
 
@@ -130,6 +149,7 @@
         var self = this;
         this.addClass('visible');
         self.board.style.top = (window.pageYOffset)+"px";
+        Self.board.style.width = window.innerWidth+"px";
     }
     
     window.Keys = Keys;
