@@ -32,6 +32,7 @@ div#keyboard .key {
     text-decoration: none;
     vertical-align: middle;
     cursor:pointer;
+    white-space: nowrap;
 }
 /*screws up iOS
 div#keyboard .key:hover {

@@ -113,7 +113,9 @@
                     } else {
                         insertAtCaret(self.input, button.value);
                     }
-                    
+
+                    key.behavior(self.input);
+
                 };
                 var onTouchStart = function(){
                     button.addEventListener('touchend', button.hitButton, false);
