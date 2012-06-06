@@ -117,7 +117,6 @@
                     if(key.behavior){
                         key.behavior(self.input)
                     };
-
                 };
                 var onTouchStart = function(){
                     button.addEventListener('touchend', button.hitButton, false);
@@ -149,6 +148,16 @@
             }, false);
 
             var inputs = document.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('focus', function () {
+                    self.input = this;
+                    self.show();
+                }, false);
+                inputs[i].addEventListener('blur', function () {
+                    self.hide()
+                }, false);
+            }
+            inputs = document.getElementsByTagName('textarea');
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', function () {
                     self.input = this;
