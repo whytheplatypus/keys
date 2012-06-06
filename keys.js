@@ -114,7 +114,9 @@
                         insertAtCaret(self.input, button.value);
                     }
 
-                    key.behavior(self.input);
+                    if(key.behavior){
+                        key.behavior(self.input)
+                    };
 
                 };
                 var onTouchStart = function(){
