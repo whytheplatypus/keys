@@ -72,8 +72,15 @@
 
             self.symbols.forEach(function (key) {
                 var button = document.createElement('a');
-                button.value = key;
-                button.innerHTML = key;
+
+                if(!key.value && !key.display){
+                    button.value = key;
+                    button.innerHTML = key;
+                } else {
+                    button.value = key.value;
+                    button.innerHTML = key.display;
+                }
+
                 button.className = "key";
                 
                 var insertAtCaret = function(el,text) {
