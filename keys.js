@@ -66,8 +66,8 @@
             }
             if (!document.getElementById(self.board.id)) {
                 document.body.appendChild(self.board);
-                self.board.addEventListener('selectstart', function(event){event.preventDefault(); console.log(event); return false;}, false);
-                self.board.addEventListener('select', function(event){event.preventDefault(); console.log(event); return false;}, false);
+                self.board.addEventListener('selectstart', function(event){event.preventDefault(); return false;}, false);
+                self.board.addEventListener('select', function(event){event.preventDefault(); return false;}, false);
             }
 
             self.symbols.forEach(function (key) {
@@ -163,11 +163,13 @@
             window.addEventListener('scroll', function () {
                 if (self.input) {
                     self.board.style.top = window.pageYOffset + "px";
+                    self.board.style.left = window.pageXOffset + "px";
                 }
             }, false);
             window.addEventListener('resize', function () {
                 if (self.input) {
                     self.board.style.top = window.pageYOffset + "px";
+                    self.board.style.left = window.pageXOffset + "px";
                     self.board.style.width = window.innerWidth + "px";
                 }
             }, false);
@@ -180,13 +182,20 @@
         this.removeClass('visible');
         this.input = false;
         this.board.style.top = "-60px";
+        if(this.options.onHide){
+            this.options.onHide();
+        }
     }
 
     Keys.prototype.show = function () {
         var self = this;
         this.addClass('visible');
         self.board.style.top = (window.pageYOffset) + "px";
+        self.board.style.left = window.pageXOffset + "px";
         self.board.style.width = window.innerWidth + "px";
+        if(self.options.onShow){
+            self.options.onShow();
+        }
     }
 
     window.Keys = Keys;
