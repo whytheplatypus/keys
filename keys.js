@@ -104,8 +104,9 @@
                     event.preventDefault();
 
                     if (self.input.replaceRange) {
-                        var cursor_temp = self.input.getCursor();
+                        var cursor_temp = self.input.getCursor(true);
                         self.input.replaceRange(button.value, cursor_temp);
+
                         /*var cursor_temp = self.input.getCursor();
                         self.input.setValue(self.input.getValue() + button.value);
                         cursor_temp.ch += 1;
@@ -157,7 +158,14 @@
                     self.hide()
                 }, false);
             }
-            inputs = document.getElementsByTagName('textarea');
+            inputs = new Array();
+            if(this.options.codemirrors){
+                for(var i in this.options.textareas){
+                    inputs.push(document.getElementById(this.options.textareas[i]));
+                }
+            } else {
+                inputs = document.getElementsByTagName('textarea');
+            }
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', function () {
                     self.input = this;
