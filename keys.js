@@ -84,6 +84,7 @@
      * @return {keys} just in case.
      */
     Keys.prototype.build = function () {
+        console.log("building keys");
         var self = this;
         //make sure we're on iOS (just iOS for now)
         if (this.options.debug || Keys.isMobile) {
@@ -106,9 +107,8 @@
                 }
                 
                 newKey.button.addEventListener('touchend', keyReleased, false);
-                
-                if (self.options.debug && !Keys.isMobile {
-                  newKey.button.addEventListener('click', keyReleased, false);
+                if (self.options.debug && !Keys.isMobile()) {
+                    newKey.button.addEventListener('click', keyReleased, false);
                 }
 
                 self.board.appendChild(newKey.button);
@@ -120,28 +120,23 @@
             document.body.addEventListener('orientationchange', function (event) {
                 self.orientation();
             }, false);
-
-            var inputs = document.getElementsByTagName('input');
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].addEventListener('focus', function () {
-                    self.input = this;
-                    self.show();
-                }, false);
-                inputs[i].addEventListener('blur', function () {
-                    self.hide()
-                }, false);
-            }
-            inputs = document.getElementsByTagName('textarea');
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].addEventListener('focus', function () {
-                    self.input = this;
-                    self.show();
-                }, false);
-                inputs[i].addEventListener('blur', function () {
-                    self.hide()
-                }, false);
-            }
-            if (this.options.codemirrors) {
+            
+            var attachInputListeners = function(inputs){
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].addEventListener('focus', function () {
+                        self.input = this;
+                        self.show();
+                    }, false);
+                    inputs[i].addEventListener('blur', function () {
+                        self.hide();
+                    }, false);
+                }
+            };
+            
+            var areas = document.getElementsByTagName('input');
+            attachInputListeners(areas);
+            
+            if(this.options.codemirrors){
                 for (var i = 0; i < this.options.codemirrors.length; i++) {
                     var currentMirror = this.options.codemirrors[i];
                     currentMirror.setOption('onFocus', function () {
@@ -152,7 +147,16 @@
                         self.hide();
                     });
                 }
+                areas = new Array();
+                for(var i in this.options.textareas){
+                    areas.push(document.getElementById(this.options.textareas[i]));
+                    attachInputListeners(areas);
+                }
+            } else {
+                areas = document.getElementsByTagName('textarea');
+                attachInputListeners(areas);
             }
+            
 
             window.addEventListener('scroll', function () {
                 if (self.input) {
@@ -175,22 +179,22 @@
     Keys.prototype.hide = function () {
         this.removeClass('visible');
         this.input = false;
-        this.board.style.top = "-60px";
+        //this.board.style.top = "-60px";
         if(this.options.onHide){
             this.options.onHide();
         }
-    }
+    };
 
     Keys.prototype.show = function () {
         var self = this;
         this.addClass('visible');
-        self.board.style.top = (window.pageYOffset) + "px";
+        self.board.style.top = window.pageYOffset + "px";
         self.board.style.left = window.pageXOffset + "px";
         self.board.style.width = window.innerWidth + "px";
         if(self.options.onShow){
             self.options.onShow();
         }
-    }
+    };
         
     /**
      * Creates an instance of keys, an extra row of buttons for the iOS virtual keyboard in webapps.
@@ -220,12 +224,8 @@
             event.preventDefault();
 
             if (input.replaceRange) {
-                var cursor_temp = input.getCursor();
+                var cursor_temp = self.input.getCursor(true);
                 input.replaceRange(button.value, cursor_temp);
-                /*var cursor_temp = self.input.getCursor();
-                self.input.setValue(self.input.getValue() + button.value);
-                cursor_temp.ch += 1;
-                self.input.setCursor(cursor_temp);*/
             } else {
                 Keys.insertAtCaret(input, button.value);
             }
