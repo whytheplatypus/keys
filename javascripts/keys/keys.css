@@ -1,20 +1,20 @@
 
 div#keyboard{
-    position:fixed;
-    top:-60px;
-    height:60px;
+    position:absolute;
+    top:0px;
+    height:0px;
     width:100%;
-    z-index: 2000;
+    z-index: 9999;
     overflow-x:scroll;
     -webkit-overflow-scrolling: touch;
-    -webkit-transition: top 0.25s ease-in-out;
-    -moz-transition: top 0.25s ease-in-out;
-    -o-transition: top 0.25s ease-in-out;
+    -webkit-transition: height 0.25s ease-in-out;
+    -moz-transition: height 0.25s ease-in-out;
+    -o-transition: height 0.25s ease-in-out;
+    transition: height 0.25s ease-in-out;
 }
 
 div#keyboard.visible{
-    position:absolute;
-    top:0px;
+    height:60px;
 }
 
 div#keyboard .key {

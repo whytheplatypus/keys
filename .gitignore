@@ -2,3 +2,5 @@
 .idea/*
 test_site
 test_site/*
+keys.sublime-project
+keys.sublime-workspace
