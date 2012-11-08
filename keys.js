@@ -1,32 +1,84 @@
-(function () {
+(function (window) {
     "use strict";
 
     /**
-     * Creates an instance of keys, an extra row of buttons for the iOS virtual keyboard in webapps.
+     * Create a new Keys object
      *
+     * options:
+     * 
      * @constructor
-     * @this {keys}
-     * @param {Array} syms An array of characters that you want the new keyboard to containt (this can be added to later).
-     * @param {Object} options An object containing options for the new keys, this is optional
+     * @param {Object} syms The json object describing the symbols for the keyboard.
+     * @param {Object} opt Options (need to document these)
+     * @return {Object} exports for chaining
      */
     var Keys = function (syms, opt) {
         this.symbols = syms;
         this.options = opt ? opt : {};
+
         //we haven't rendered anything yet
         this.board = false;
         this.input = false; //the currently focused input
+
+        this.keys = new Array();
+        //create the keys
+        syms.forEach(this.addKey);
         
-        this.build();
+        if(!this.options.buildLater){
+            this.build();
+        }
+
+        return this;
     };
 
+
+    /**
+     * Add a Key
+     *
+     * @param {Object} key The symbol to turn into a key, or a Key object
+     * @return {Object} returns the created key for modification.
+     */
+    Keys.prototype.addKey = function(key){
+        var self = this;
+        var newKey = (key instanceof Keys.Key)?key:new Keys.Key(key);
+        
+        var keyReleased = function(){
+            newKey.hitButton(self.input);
+        }
+        newKey.button.addEventListener('touchend', keyReleased, false);
+        if (self.options.debug && !Keys.isMobile()) {
+            newKey.button.addEventListener('click', keyReleased, false);
+        }
+
+        self.keys.push(newKey);
+        return newKey;
+    }
+
+    /**
+     * Check if the keyboard element has class cls attached to it
+     *
+     * @param {String} cls A class to check for
+     * @return {Boolean} true if the class exists false otherwise
+     */
     Keys.prototype.hasClass = function (cls) {
         return this.board.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
     }
 
+    /**
+     * add a class to the keyboard if it doesn't already have it
+     * uses hasClass
+     *
+     * @param {String} cls A class to add
+     */
     Keys.prototype.addClass = function (cls) {
         if (!this.hasClass(cls)) this.board.className += " " + cls;
     }
 
+    /**
+     * Remove a class to the keyboard
+     * uses hasClass
+     *
+     * @param {String} cls A class to remove
+     */
     Keys.prototype.removeClass = function (cls) {
         if (this.hasClass(cls)) {
             var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
@@ -35,10 +87,9 @@
     }
 
     /**
-     * Updates the orientation of keys display, we define how it handles the orientation in the css
+     * Update the orientation of the device
      *
-     * @this {keys}
-     * @return {string} the current orientation of the device.
+     * @return {String} returns the string of the current orientation.
      */
     Keys.prototype.orientation = function () {
         if (window.orientation == 0 || 180) {
@@ -52,14 +103,15 @@
         }
         
     }
-        
+
     /**
-     * Inserts text at the carat and updates the carats position
+     * Inserts the given text into the text element at the current cursor position.
+     * For use with elements that don't support replaceRange
      *
-     * @this {insertAtCarat}
-     * @return {bool} just because.
+     * @param {Element} a html editable element.
+     * @param {String} the text to insert.
      */
-    Keys.insertAtCaret = function(el,text) {
+    Keys.prototype.insertAtCaret = function(el,text) {
         var txtarea = el;
         var scrollPos = txtarea.scrollTop;
         var strPos = 0;
@@ -77,16 +129,30 @@
     }
 
     /**
-     * Creates and or renders the board and respective keys,
-     * including listeners, orientation etc.
+     * Ataches blur and focus listeners to *inputs*
+     * to control showing and hiding the keyboard.
      *
-     * @self {keys}
-     * @return {keys} just in case.
+     * @param {Array} inputs An Array of inputs, should be text areas, fields, content editable areas etc.
+     */
+    Keys.prototype.attachInputListeners = function(inputs){
+        var self = this;
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].addEventListener('focus', function () {
+                self.input = this;
+                self.show();
+            }, false);
+            inputs[i].addEventListener('blur', function () {
+                self.hide();
+            }, false);
+        }
+    };
+
+    /**
+     * Constructs the actual virtual keyboard.
      */
     Keys.prototype.build = function () {
-        console.log("building keys");
         var self = this;
-        //make sure we're on iOS (just iOS for now)
+        //show if we're mobile
         if (this.options.debug || Keys.isMobile) {
             if (!self.board) {
                 self.board = document.createElement('div');
@@ -98,20 +164,9 @@
                 self.board.addEventListener('selectstart', function(event){event.preventDefault(); return false;}, false);
                 self.board.addEventListener('select', function(event){event.preventDefault(); return false;}, false);
             }
-
-            self.symbols.forEach(function (key) {
-                var newKey = new Key(key);
-                
-                var keyReleased = function(){
-                    newKey.hitButton(self.input);
-                }
-                
-                newKey.button.addEventListener('touchend', keyReleased, false);
-                if (self.options.debug && !Keys.isMobile()) {
-                    newKey.button.addEventListener('click', keyReleased, false);
-                }
-
-                self.board.appendChild(newKey.button);
+            //create the keys
+            self.keys.forEach(function (key) {
+                self.board.appendChild(key.button);
             });
 
 
@@ -121,20 +176,8 @@
                 self.orientation();
             }, false);
             
-            var attachInputListeners = function(inputs){
-                for (var i = 0; i < inputs.length; i++) {
-                    inputs[i].addEventListener('focus', function () {
-                        self.input = this;
-                        self.show();
-                    }, false);
-                    inputs[i].addEventListener('blur', function () {
-                        self.hide();
-                    }, false);
-                }
-            };
-            
             var areas = document.getElementsByTagName('input');
-            attachInputListeners(areas);
+            self.attachInputListeners(areas);
             
             if(this.options.codemirrors){
                 for (var i = 0; i < this.options.codemirrors.length; i++) {
@@ -150,11 +193,11 @@
                 areas = new Array();
                 for(var i in this.options.textareas){
                     areas.push(document.getElementById(this.options.textareas[i]));
-                    attachInputListeners(areas);
+                    self.attachInputListeners(areas);
                 }
             } else {
                 areas = document.getElementsByTagName('textarea');
-                attachInputListeners(areas);
+                self.attachInputListeners(areas);
             }
             
 
@@ -176,15 +219,28 @@
         return this;
     };
 
+
+    /**
+     * Hide the keybaord
+     * uses removeClass
+     * calls the onHide funciton from options
+     *
+     */
     Keys.prototype.hide = function () {
         this.removeClass('visible');
         this.input = false;
         //this.board.style.top = "-60px";
         if(this.options.onHide){
-            this.options.onHide();
+            return this.options.onHide();
         }
     };
 
+    /**
+     * Show the keybaord
+     * uses addClass
+     * calls the onShow funciton from options
+     *
+     */
     Keys.prototype.show = function () {
         var self = this;
         this.addClass('visible');
@@ -192,16 +248,17 @@
         self.board.style.left = window.pageXOffset + "px";
         self.board.style.width = window.innerWidth + "px";
         if(self.options.onShow){
-            self.options.onShow();
+            return self.options.onShow();
         }
     };
         
     /**
-     * Creates an instance of keys, an extra row of buttons for the iOS virtual keyboard in webapps.
+     * Create a new Key object
      *
+     * 
      * @constructor
-     * @this {Key}
-     * @param {key} A JSON object describing the key, or just a string if the keys value and display are the same.
+     * @param {Object} key the json object defining the key
+     * @return {Object} exports for chaining
      */
     var Key = function(key){
         var self = this;
@@ -214,27 +271,6 @@
         button.className = "key";
         
         
-
-        this.hitButton = function (input) {
-            if(self.justMoved){
-                self.justMoved = false;
-                return;
-            }
-            //self.el.removeEventListener('touchend', self.hitButton, false);
-            event.preventDefault();
-
-            if (input.replaceRange) {
-                var cursor_temp = self.input.getCursor(true);
-                input.replaceRange(button.value, cursor_temp);
-            } else {
-                Keys.insertAtCaret(input, button.value);
-            }
-
-            if(key.behavior){
-                key.behavior(input);
-            }
-        };
-        
         button.addEventListener('touchmove', function(){
             self.justMoved = true;
         });
@@ -246,13 +282,62 @@
         }, false);
         
         this.button = button;
-    }
+
+        return this;
+    };
+
+
+    /**
+     * The action to be taken when a button is pressed.
+     *
+     * Change the prototype to change the behavior of all keys
+     * or change just one key's hitButton to change only it's behavior
+     * 
+     * @param {Element} input the input area to take the key action in.
+     *
+     */
+    Key.prototype.hitButton = function (input) {
+        var self = this;
+        if(self.justMoved){
+            self.justMoved = false;
+            return;
+        }
+        //self.el.removeEventListener('touchend', self.hitButton, false);
+        event.preventDefault();
+
+        if (input.replaceRange) {
+            var cursor_temp = self.input.getCursor(true);
+            input.replaceRange(button.value, cursor_temp);
+        } else {
+            Keys.insertAtCaret(input, button.value);
+        }
+
+        if(key.behavior){
+            key.behavior(input);
+        }
+    };
+
+    Keys.Key = Key;
         
-    Keys.isMobile = function(){
+
+    /**
+     * Test if we are in a mobile browser, currently only checks for 'i' things
+     */
+    Keys.prototype.isMobile = function(){
         return (navigator.userAgent.indexOf('iPhone') != -1) || 
                 (navigator.userAgent.indexOf('iPod') != -1) || 
                 (navigator.userAgent.indexOf('iPad') != -1);
     }
 
-    window.Keys = Keys;
-})();
+
+    /**
+     * try and make an AMD module out of this, if we can't return a global
+     */
+    if ( typeof define === "function" && define.amd) {
+        define( "keys", [], function () { return Keys; } );
+    } else {
+        window.Keys = Keys;
+    }
+
+    
+})(window);
