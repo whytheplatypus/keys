@@ -6,9 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="description" content="Keys : virtual keys for iOS webapps" />
 
-		
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-		<link rel='stylesheet' type="text/css" media="screen" href="javascripts/keys/keys.css">
+
     <title>Keys</title>
   </head>
 
@@ -34,29 +33,19 @@
       <section id="main_content" class="inner">
         <h2>Usage Guide</h2>
 
+<p><a href="/docs">API docs</a></p>
+
 <p>You should really just be able to drop in <code>keys.js</code> and <code>keys.css</code></p>
 
 <p>To create a keyboard just add </p>
 
-<div class="highlight">
-<pre><span class="kd">var</span> <span class="k">new</span><span class="o">-</span><span class="nx">keyboard</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Keys</span><span class="p">([</span><span class="s1">'a'</span><span class="p">,</span><span class="s1">'b'</span><span class="p">,</span><span class="s1">'c'</span><span class="p">]);</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="k">new</span><span class="o">-</span><span class="nx">keyboard</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Keys</span><span class="p">([</span><span class="s1">'a'</span><span class="p">,</span><span class="s1">'b'</span><span class="p">,</span><span class="s1">'c'</span><span class="p">]);</span>
 <span class="k">new</span><span class="o">-</span><span class="nx">keyboard</span><span class="p">.</span><span class="nx">build</span><span class="p">();</span>
-</pre>
-</div>
-
+</pre></div>
 
 <p>and everything else should be taken care of</p>
 
 <p>At the moment multiple keyboards will overlap…I'll work on a solution to that o_0</p>
-
-<p>In the mean time here's an input to play with:</p>
-<input type='text' placeholder="try me on your ipad"></input>
-</br>
-<textarea rows="10" cols="50">
-	
-</textarea>
-
-
       </section>
     </div>
 
@@ -68,14 +57,7 @@
       </footer>
     </div>
 
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-</script>
-<script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<script src="javascripts/keys/keys.js"></script>
-<script src="javascripts/main.js"></script>
+    
 
   </body>
 </html>
