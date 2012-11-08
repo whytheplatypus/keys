@@ -6,7 +6,6 @@ To create a keyboard just add
 
 ```javascript
 var testKeyboard = new Keys(['a','b','c']);
-testKeyboard.build();
 ```
 
 and everything else should be taken care of
