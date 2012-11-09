@@ -1,0 +1,8 @@
+{
+  "volo": {
+    "dependencies": {
+      "rainbow": "github:ccampbell/rainbow/1.1.8",
+      "underscore": "github:documentcloud/underscore/1.4.2"
+    }
+  }
+}
