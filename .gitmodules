@@ -1,0 +1,3 @@
+[submodule "javascripts/keys"]
+	path = javascripts/keys
+	url = git://github.com/whytheplatypus/keys.git
