@@ -130,7 +130,7 @@
         var selectedText = txtarea.value.substring(txtarea.selectionStart, txtarea.selectionEnd);
         var text = template({selection: selectedText});
 
-        txtarea.value=front+text+back;
+        txtarea.value = front+text+back;
         strPos = strPos + text.length;
         txtarea.selectionStart = strPos;
         txtarea.selectionEnd = strPos;
@@ -303,11 +303,14 @@
         event.preventDefault();
         // console.log(self);
         var button_template = _.template(self.button.value);
-        // if(self.behavior){
-        //     value = self.behavior(input);
-        // }
+        //
         console.log(input);
         Keys.insertAtCaret(input, button_template);
+
+        if(self.behavior){
+            self.behavior();
+        }
+
         // if (input.replaceRange) {
         //     var cursor_temp = self.input.getCursor(true);
         //     input.replaceRange(value, cursor_temp);
