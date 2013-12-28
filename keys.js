@@ -21,7 +21,9 @@
 
         this.keys = new Array();
         //create the keys
-        syms.forEach(this.addKey);
+        for (var i = this.symbols.length - 1; i >= 0; i--) {
+            this.addKey(this.symbols[i]);
+        };
         
         if(!this.options.buildLater){
             this.build();
@@ -111,14 +113,13 @@
      * @param {Element} a html editable element.
      * @param {String} the text to insert.
      */
-    Keys.prototype.insertAtCaret = function(el,text) {
+    Keys.insertAtCaret = function(el,text) {
         var txtarea = el;
         var scrollPos = txtarea.scrollTop;
         var strPos = 0;
         strPos = txtarea.selectionStart;
-    
         var front = (txtarea.value).substring(0,strPos);  
-        var back = (txtarea.value).substring(strPos,txtarea.value.length); 
+        var back = (txtarea.value).substring(txtarea.selectionEnd,txtarea.value.length); 
         txtarea.value=front+text+back;
         strPos = strPos + text.length;
         txtarea.selectionStart = strPos;
@@ -282,6 +283,7 @@
         }, false);
         
         this.button = button;
+        this.behavior = key.behavior;
 
         return this;
     };
@@ -304,17 +306,20 @@
         }
         //self.el.removeEventListener('touchend', self.hitButton, false);
         event.preventDefault();
-
+        console.log(self);
+        var value = self.button.value;
+        if(self.behavior){
+            value = self.behavior(input);
+        }
+        console.log(input);
         if (input.replaceRange) {
             var cursor_temp = self.input.getCursor(true);
-            input.replaceRange(button.value, cursor_temp);
+            input.replaceRange(value, cursor_temp);
         } else {
-            Keys.insertAtCaret(input, button.value);
+            Keys.insertAtCaret(input, value);
         }
 
-        if(key.behavior){
-            key.behavior(input);
-        }
+        
     };
 
     Keys.Key = Key;
@@ -323,7 +328,7 @@
     /**
      * Test if we are in a mobile browser, currently only checks for 'i' things
      */
-    Keys.prototype.isMobile = function(){
+    Keys.isMobile = function(){
         return (navigator.userAgent.indexOf('iPhone') != -1) || 
                 (navigator.userAgent.indexOf('iPod') != -1) || 
                 (navigator.userAgent.indexOf('iPad') != -1);
