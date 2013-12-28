@@ -11,13 +11,19 @@
      * @param {Object} opt Options (need to document these)
      * @return {Object} exports for chaining
      */
-    var Keys = function (syms, opt) {
+    var Keys = function (el, syms, opt) {
+
+        if(_ === undefined){
+            console.log("this library requires underscore.js");
+            throw "underscore.js (_) not found";
+        }
+
         this.symbols = syms;
         this.options = opt ? opt : {};
 
         //we haven't rendered anything yet
         this.board = false;
-        this.input = false; //the currently focused input
+        this.input = el; //the currently focused input
 
         this.keys = new Array();
         //create the keys
@@ -113,13 +119,17 @@
      * @param {Element} a html editable element.
      * @param {String} the text to insert.
      */
-    Keys.insertAtCaret = function(el,text) {
+    Keys.insertAtCaret = function(el,template) {
         var txtarea = el;
         var scrollPos = txtarea.scrollTop;
         var strPos = 0;
         strPos = txtarea.selectionStart;
         var front = (txtarea.value).substring(0,strPos);  
         var back = (txtarea.value).substring(txtarea.selectionEnd,txtarea.value.length); 
+
+        var selectedText = txtarea.value.substring(txtarea.selectionStart, txtarea.selectionEnd);
+        var text = template({selection: selectedText});
+
         txtarea.value=front+text+back;
         strPos = strPos + text.length;
         txtarea.selectionStart = strPos;
@@ -135,21 +145,32 @@
      *
      * @param {Array} inputs An Array of inputs, should be text areas, fields, content editable areas etc.
      */
-    Keys.prototype.attachInputListeners = function(inputs){
+    Keys.prototype._attachInputListeners = function(){
         var self = this;
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].addEventListener('focus', function () {
-                self.input = this;
-                self.show();
-            }, false);
-            inputs[i].addEventListener('blur', function () {
-                self.hide();
-            }, false);
-        }
+
+        
+        // @todo Code mirror specific code
+         
+        // currentMirror.setOption('onFocus', function () {
+        //     self.input = currentMirror;
+        //     self.show();
+        // });
+        // currentMirror.setOption('onBlur', function () {
+        //     self.hide();
+        // });
+
+        self.input.addEventListener('focus', function () {
+            self.show();
+        }, false);
+        self.input.addEventListener('blur', function () {
+            self.hide();
+        }, false);
     };
 
     /**
      * Constructs the actual virtual keyboard.
+     *
+     * @todo  rebuild
      */
     Keys.prototype.build = function () {
         var self = this;
@@ -157,9 +178,7 @@
         if (this.options.debug || Keys.isMobile) {
             if (!self.board) {
                 self.board = document.createElement('div');
-                self.board.id = "keyboard";//make unique at some point
-            }
-            if (!document.getElementById(self.board.id)) {
+                self.board.className = "keyboard";
                 document.body.appendChild(self.board);
                 //prevent wierd iOS behavior
                 self.board.addEventListener('selectstart', function(event){event.preventDefault(); return false;}, false);
@@ -177,30 +196,7 @@
                 self.orientation();
             }, false);
             
-            var areas = document.getElementsByTagName('input');
-            self.attachInputListeners(areas);
-            
-            if(this.options.codemirrors){
-                for (var i = 0; i < this.options.codemirrors.length; i++) {
-                    var currentMirror = this.options.codemirrors[i];
-                    currentMirror.setOption('onFocus', function () {
-                        self.input = currentMirror;
-                        self.show();
-                    });
-                    currentMirror.setOption('onBlur', function () {
-                        self.hide();
-                    });
-                }
-                areas = new Array();
-                for(var i in this.options.textareas){
-                    areas.push(document.getElementById(this.options.textareas[i]));
-                    self.attachInputListeners(areas);
-                }
-            } else {
-                areas = document.getElementsByTagName('textarea');
-                self.attachInputListeners(areas);
-            }
-            
+            self._attachInputListeners();
 
             window.addEventListener('scroll', function () {
                 if (self.input) {
@@ -229,7 +225,6 @@
      */
     Keys.prototype.hide = function () {
         this.removeClass('visible');
-        this.input = false;
         //this.board.style.top = "-60px";
         if(this.options.onHide){
             return this.options.onHide();
@@ -306,18 +301,19 @@
         }
         //self.el.removeEventListener('touchend', self.hitButton, false);
         event.preventDefault();
-        console.log(self);
-        var value = self.button.value;
-        if(self.behavior){
-            value = self.behavior(input);
-        }
+        // console.log(self);
+        var button_template = _.template(self.button.value);
+        // if(self.behavior){
+        //     value = self.behavior(input);
+        // }
         console.log(input);
-        if (input.replaceRange) {
-            var cursor_temp = self.input.getCursor(true);
-            input.replaceRange(value, cursor_temp);
-        } else {
-            Keys.insertAtCaret(input, value);
-        }
+        Keys.insertAtCaret(input, button_template);
+        // if (input.replaceRange) {
+        //     var cursor_temp = self.input.getCursor(true);
+        //     input.replaceRange(value, cursor_temp);
+        // } else {
+        //     Keys.insertAtCaret(input, button_template);
+        // }
 
         
     };
